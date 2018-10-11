@@ -1,0 +1,5 @@
+spring:
+  application:
+    name: prescription-update-service
+pillpack.medications.uri: http://api-sandbox.pillpack.com/medications
+pillpack.prescriptions.uri: http://api-sandbox.pillpack.com/prescriptions
