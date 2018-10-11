@@ -50,8 +50,8 @@ public class PrescriptionUpdateServiceImplTest {
 	private PrescriptionUpdateServiceImpl service;
 
 	/**
-	 * Testing the service to check if the list retrieved is similar to expected
-	 * list
+	 * Testing the scenario to check if genric medications are added to updated list
+	 * 
 	 * 
 	 * @throws JsonParseException
 	 * @throws JsonMappingException
@@ -72,8 +72,7 @@ public class PrescriptionUpdateServiceImplTest {
 	}
 
 	/**
-	 * Testing the service to check if the list retrieved is similar to expected
-	 * list
+	 * Testing the service to check if brand name medications are not added to the updated list
 	 * 
 	 * @throws JsonParseException
 	 * @throws JsonMappingException
