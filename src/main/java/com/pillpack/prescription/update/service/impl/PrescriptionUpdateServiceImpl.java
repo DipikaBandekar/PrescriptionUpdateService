@@ -27,6 +27,10 @@ public class PrescriptionUpdateServiceImpl implements IPrescriptionUpdateService
 	@Qualifier("medicationsFacade")
 	private IPrescriptionUpdateFacade medicationsFacade;
 
+	@Autowired
+	@Qualifier("rxcuiFacade")
+	private IPrescriptionUpdateFacade rxcuiFacade;
+
 	/**
 	 * Method to prepare the updated Prescription list
 	 */
@@ -34,26 +38,26 @@ public class PrescriptionUpdateServiceImpl implements IPrescriptionUpdateService
 	@Override
 	public List<UpdatedPrescriptionModel> preparePrescriptionUpdate() throws PrescriptionUpdateException {
 		List<UpdatedPrescriptionModel> updatedPrescriptionList = new ArrayList<>();
-		Map<String, Map<String, Integer>> rxcuiMedIdCountMap = null;
 		Map<String, MedicationModel> medicationMap = new HashMap<>();
+		List<MedicationModel> rxcuiList = null;
 		// get prescription list
-		List<PrescriptionModel> prescriptionList = (List<PrescriptionModel>) prescriptionFacade.processRest();
+		List<PrescriptionModel> prescriptionList = (List<PrescriptionModel>) prescriptionFacade.processRest("");
 		// get medication list
-		List<MedicationModel> medicationList = (List<MedicationModel>) medicationsFacade.processRest();
+		List<MedicationModel> medicationList = (List<MedicationModel>) medicationsFacade.processRest("");
 		// prepare medication map to get medicationID
 		medicationList.forEach(model -> medicationMap.put(model.getId(), model));
-		// load rxcui, medicationId and count of medication id
-		rxcuiMedIdCountMap = prepareRXCUIMedIdMap(medicationList);
 		for (PrescriptionModel prescriptionModel : prescriptionList) {
 			MedicationModel medicationModel = medicationMap.get(prescriptionModel.getMedicationId());
-			// rxcui identifier present and medicationId count > 1, replace prescription with generic
-			if (rxcuiMedIdCountMap.containsKey(medicationModel.getRxcui())) {
-				Map<String, Integer> medicationCountMap = rxcuiMedIdCountMap.get(medicationModel.getRxcui());
-				String medicationId = medicationCountMap.keySet().iterator().next();
-				if (medicationCountMap.get(medicationId) > 1) {
-					updatedPrescriptionList.add(updatePrescriptionModel(prescriptionModel, medicationId));
+			if (!medicationModel.getGeneric()) {
+				// prescription with generic
+				rxcuiList = (List<MedicationModel>) rxcuiFacade.processRest(medicationModel.getRxcui());
+				if (rxcuiList.size() > 1) {
+					MedicationModel genericModel = getGenericModel(rxcuiList);
+					if (genericModel != null)
+						updatedPrescriptionList.add(updatePrescriptionModel(prescriptionModel, genericModel.getId()));
 				}
 			}
+
 		}
 		return updatedPrescriptionList;
 	}
@@ -72,30 +76,16 @@ public class PrescriptionUpdateServiceImpl implements IPrescriptionUpdateService
 		return model;
 	}
 
-	
-
 	/**
-	 * prepare rxcui Medication Id Map
+	 * get generic model from the list
 	 * 
-	 * @param medicationList
-	 * @return
 	 */
-	private Map<String, Map<String, Integer>> prepareRXCUIMedIdMap(List<MedicationModel> medicationList) {
-		Map<String, Map<String, Integer>> rxcuiMedIdCountMap = new HashMap<>();
-		Map<String, Integer> medicationCountMap = null;
-		for (MedicationModel model : medicationList) {
-			if (!rxcuiMedIdCountMap.containsKey(model.getRxcui())) {
-				medicationCountMap = new HashMap<>();
-				medicationCountMap.put(model.getId(), 1);
-				rxcuiMedIdCountMap.put(model.getRxcui(), medicationCountMap);
-			} else {
-				medicationCountMap = rxcuiMedIdCountMap.get(model.getRxcui());
-				String medicationId = medicationCountMap.keySet().iterator().next();
-				medicationCountMap.put(medicationId, medicationCountMap.get(medicationId) + 1);
-				rxcuiMedIdCountMap.put(model.getRxcui(), medicationCountMap);
-			}
+	private MedicationModel getGenericModel(List<MedicationModel> modelList) {
+		for (MedicationModel model : modelList) {
+			if (model.getGeneric())
+				return model;
 		}
-		return rxcuiMedIdCountMap;
+		return null;
 	}
 
 }

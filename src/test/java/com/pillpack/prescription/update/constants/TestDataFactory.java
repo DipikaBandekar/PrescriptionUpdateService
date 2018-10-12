@@ -24,7 +24,7 @@ public class TestDataFactory {
 	public static final String NDC_VAL = "ecuzioqsigu";
 	public static final String RXCUI_VAL = "92345";
 	public static final String MEDICATION_DESC_VAL = "Acetaminophen 297 mg";
-	
+
 	public static Throwable throwable = new Throwable();
 
 	/**
@@ -122,8 +122,7 @@ public class TestDataFactory {
 			throws JsonParseException, JsonMappingException, IOException {
 		ObjectMapper obj = new ObjectMapper();
 		String updatedListStr = new String(
-				"[{\"prescription_id\":\"562cddf76238310003020000\",\"medication_id\":\"562cdd706238310003000000\"},"
-						+ "{\"prescription_id\":\"562cde1d6238310003030000\",\"medication_id\":\"562cdd706238310003000000\"}]");
+				"[{\"prescription_id\":\"562cddf76238310003020000\",\"medication_id\":\"562cdd706238310003000000\"}]");
 		List<UpdatedPrescriptionModel> objList = null;
 		if (updatedListStr != null && updatedListStr.length() != 0) {
 			objList = obj.readValue(updatedListStr, new TypeReference<List<UpdatedPrescriptionModel>>() {
@@ -137,11 +136,12 @@ public class TestDataFactory {
 	 * 
 	 * @param prescriptionListStr
 	 * @return
-	 * @throws IOException 
-	 * @throws JsonMappingException 
-	 * @throws JsonParseException 
+	 * @throws IOException
+	 * @throws JsonMappingException
+	 * @throws JsonParseException
 	 */
-	public static List<MedicationModel> getMedicationList() throws JsonParseException, JsonMappingException, IOException {
+	public static List<MedicationModel> getMedicationList()
+			throws JsonParseException, JsonMappingException, IOException {
 		ObjectMapper obj = new ObjectMapper();
 		String medicationStr = new String(
 				"[{\"id\":\"562cdd706238310003000000\",\"ndc\":\"ecuzioqsigu\",\"rxcui\":\"12345\","

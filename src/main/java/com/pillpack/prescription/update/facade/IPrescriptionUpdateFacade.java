@@ -11,5 +11,5 @@ public interface IPrescriptionUpdateFacade {
 	 * @return
 	 * @throws PrescriptionUpdateException
 	 */
-	public Object processRest() throws PrescriptionUpdateException;
+	public Object processRest(String message) throws PrescriptionUpdateException;
 }

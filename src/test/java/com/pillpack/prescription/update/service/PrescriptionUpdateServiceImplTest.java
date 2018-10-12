@@ -1,14 +1,14 @@
 package com.pillpack.prescription.update.service;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.when;
 
 import java.io.IOException;
-import java.text.ParseException;
 import java.util.List;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.context.TestConfiguration;
@@ -45,6 +45,10 @@ public class PrescriptionUpdateServiceImplTest {
 	@MockBean
 	@Qualifier("prescriptionsFacade")
 	private IPrescriptionUpdateFacade prescriptionFacade;
+	
+	@MockBean
+	@Qualifier("rxcuiFacade")
+	private IPrescriptionUpdateFacade rxcuiFacade;
 
 	@Autowired
 	private PrescriptionUpdateServiceImpl service;
@@ -61,8 +65,9 @@ public class PrescriptionUpdateServiceImplTest {
 	@Test
 	public void testPreparePrescriptionUpdateGeneric()
 			throws JsonParseException, JsonMappingException, PrescriptionUpdateException, IOException {
-		when(medicationFacade.processRest()).thenReturn((List<MedicationModel>) TestDataFactory.getMedicationList());
-		when(prescriptionFacade.processRest())
+		when(medicationFacade.processRest("")).thenReturn((List<MedicationModel>) TestDataFactory.getMedicationList());
+		when(rxcuiFacade.processRest(Mockito.anyString())).thenReturn((List<MedicationModel>) TestDataFactory.getMedicationList());
+		when(prescriptionFacade.processRest(""))
 				.thenReturn((List<PrescriptionModel>) TestDataFactory.getPrescriptionList());
 		List<UpdatedPrescriptionModel> updatedList = service.preparePrescriptionUpdate();
 		List<UpdatedPrescriptionModel> expectedList = TestDataFactory.getUpdatedPrescriptionList();
@@ -71,29 +76,5 @@ public class PrescriptionUpdateServiceImplTest {
 		}
 	}
 
-	/**
-	 * Testing the service to check if brand name medications are not added to the updated list
-	 * 
-	 * @throws JsonParseException
-	 * @throws JsonMappingException
-	 * @throws PrescriptionUpdateException
-	 * @throws IOException
-	 * @throws ParseException
-	 */
-	@Test
-	public void testPreparePrescriptionUpdateBrandName()
-			throws JsonParseException, JsonMappingException, PrescriptionUpdateException, IOException, ParseException {
-		List<MedicationModel> medicationList = TestDataFactory.getMedicationList();
-		medicationList.add(TestDataFactory.getMedicationModel());
-		List<PrescriptionModel> prescriptionList = TestDataFactory.getPrescriptionList();
-		prescriptionList.add(TestDataFactory.getPrescriptionModel());
-		when(medicationFacade.processRest()).thenReturn(medicationList);
-		when(prescriptionFacade.processRest()).thenReturn(prescriptionList);
-		List<UpdatedPrescriptionModel> updatedList = service.preparePrescriptionUpdate();
-		List<UpdatedPrescriptionModel> expectedList = TestDataFactory.getUpdatedPrescriptionList();
-		for (int i = 0; i < expectedList.size(); i++) {
-			assertEquals(expectedList.get(i), (updatedList.get(i)));
-		}
-	}
 
 }

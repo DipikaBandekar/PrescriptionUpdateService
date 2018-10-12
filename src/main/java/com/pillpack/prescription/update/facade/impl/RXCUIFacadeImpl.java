@@ -19,12 +19,12 @@ import com.pillpack.prescription.update.facade.IPrescriptionUpdateFacade;
 import com.pillpack.prescription.update.model.MedicationModel;
 
 @Component
-@Qualifier("medicationsFacade")
-public class MedicationsFacadeImpl implements IPrescriptionUpdateFacade {
+@Qualifier("rxcuiFacade")
+public class RXCUIFacadeImpl implements IPrescriptionUpdateFacade {
 
-	private static final Logger logger = LogManager.getLogger(MedicationsFacadeImpl.class);
+	private static final Logger logger = LogManager.getLogger(RXCUIFacadeImpl.class);
 
-	private static final String CLASS_NAME = "MedicationsFacadeImpl";
+	private static final String CLASS_NAME = "RXCUIFacadeImpl";
 
 	@Autowired
 	private RestTemplate restTemplate;
@@ -33,13 +33,14 @@ public class MedicationsFacadeImpl implements IPrescriptionUpdateFacade {
 	private String medicationsURI;
 
 	/**
-	 * Method used to get medication list using REST API call
+	 * Method used to get medication list using rxcui identifier REST API call
 	 */
 	@Override
 	public Object processRest(String message) throws PrescriptionUpdateException {
 		List<MedicationModel> medicationList = null;
 		try {
-			medicationList = restTemplate.exchange(medicationsURI, HttpMethod.GET, HttpEntity.EMPTY, new ParameterizedTypeReference<List<MedicationModel>>() {
+			String rxcuiURI = medicationsURI + "?" + "rxcui" + "=" + message;
+			medicationList = restTemplate.exchange(rxcuiURI, HttpMethod.GET, HttpEntity.EMPTY, new ParameterizedTypeReference<List<MedicationModel>>() {
 			}).getBody();
 		} catch (Exception e) {
 			logger.error(CLASS_NAME + "-- processRest -- Error occurred while Retrieval!" + e);

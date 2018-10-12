@@ -36,7 +36,7 @@ public class PrescriptionsFacadeImpl implements IPrescriptionUpdateFacade {
 	 * Method used to get prescription list using REST API call
 	 */
 	@Override
-	public Object processRest() throws PrescriptionUpdateException {
+	public Object processRest(String message) throws PrescriptionUpdateException {
 		List<PrescriptionModel> prescriptionList = null;
 		try {
 			prescriptionList = restTemplate.exchange(prescriptionURI, HttpMethod.GET, HttpEntity.EMPTY,
