@@ -49,7 +49,7 @@ public class PrescriptionUpdateServiceImpl implements IPrescriptionUpdateService
 		for (PrescriptionModel prescriptionModel : prescriptionList) {
 			MedicationModel medicationModel = medicationMap.get(prescriptionModel.getMedicationId());
 			if (!medicationModel.getGeneric()) {
-				// prescription with generic
+				// prescription with brand name
 				rxcuiList = (List<MedicationModel>) rxcuiFacade.processRest(medicationModel.getRxcui());
 				if (rxcuiList.size() > 1) {
 					MedicationModel genericModel = getGenericModel(rxcuiList);
